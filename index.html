@@ -3,50 +3,89 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Simple Gmail Checker</title>
+  <title>Mass Gmail Checker</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      max-width: 600px;
+      max-width: 700px;
       margin: 2rem auto;
       padding: 1rem;
       border: 1px solid #ccc;
       border-radius: 12px;
       box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     }
-    input, button {
+    textarea, button {
+      width: 100%;
       padding: 0.5rem;
       font-size: 1rem;
-      margin-right: 0.5rem;
+      margin-top: 1rem;
     }
-    .valid {
+    ul {
+      list-style-type: none;
+      padding-left: 0;
+    }
+    li.valid {
       color: green;
     }
-    .invalid {
+    li.invalid {
       color: red;
+    }
+    .btn-group {
+      display: flex;
+      gap: 1rem;
     }
   </style>
 </head>
 <body>
-  <h1>Gmail Checker</h1>
-  <p>Masukkan alamat Gmail untuk memeriksa apakah valid:</p>
-  <input type="text" id="email" placeholder="example@gmail.com" />
-  <button onclick="checkGmail()">Cek</button>
-  <p id="result"></p>
+  <h1>Mass Gmail Checker</h1>
+  <p>Masukkan daftar alamat Gmail (satu per baris):</p>
+  <textarea id="emailList" rows="10" placeholder="user1@gmail.com\nuser2@gmail.com\n..."></textarea>
+  <div class="btn-group">
+    <button onclick="checkEmails()">Periksa Email</button>
+    <button onclick="copyResults()">Salin Hasil</button>
+    <button onclick="exportResults()">Unduh CSV</button>
+  </div>
+  <ul id="results"></ul>
 
   <script>
-    function checkGmail() {
-      const email = document.getElementById("email").value.trim();
-      const result = document.getElementById("result");
-      const regex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
+    const resultsData = [];
 
-      if (regex.test(email)) {
-        result.textContent = "✅ Alamat Gmail valid.";
-        result.className = "valid";
-      } else {
-        result.textContent = "❌ Alamat Gmail tidak valid.";
-        result.className = "invalid";
-      }
+    function checkEmails() {
+      const list = document.getElementById("emailList").value.trim().split("\n");
+      const results = document.getElementById("results");
+      const regex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
+      results.innerHTML = "";
+      resultsData.length = 0;
+
+      list.forEach(email => {
+        const li = document.createElement("li");
+        email = email.trim();
+        const isValid = regex.test(email);
+
+        li.textContent = `${isValid ? '✅' : '❌'} ${email} ${isValid ? 'valid' : 'tidak valid'}.`;
+        li.className = isValid ? "valid" : "invalid";
+        results.appendChild(li);
+
+        resultsData.push({ email, status: isValid ? "Valid" : "Tidak Valid" });
+      });
+    }
+
+    function copyResults() {
+      const text = resultsData.map(r => `${r.email} - ${r.status}`).join("\n");
+      navigator.clipboard.writeText(text).then(() => alert("Hasil disalin ke clipboard!"));
+    }
+
+    function exportResults() {
+      const csvContent = "data:text/csv;charset=utf-8," +
+        ["Email,Status", ...resultsData.map(r => `${r.email},${r.status}`)].join("\n");
+
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", "hasil_gmail_checker.csv");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     }
   </script>
 </body>
