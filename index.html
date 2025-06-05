@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Simple Gmail Checker</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: 2rem auto;
+      padding: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    input, button {
+      padding: 0.5rem;
+      font-size: 1rem;
+      margin-right: 0.5rem;
+    }
+    .valid {
+      color: green;
+    }
+    .invalid {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <h1>Gmail Checker</h1>
+  <p>Masukkan alamat Gmail untuk memeriksa apakah valid:</p>
+  <input type="text" id="email" placeholder="example@gmail.com" />
+  <button onclick="checkGmail()">Cek</button>
+  <p id="result"></p>
+
+  <script>
+    function checkGmail() {
+      const email = document.getElementById("email").value.trim();
+      const result = document.getElementById("result");
+      const regex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
+
+      if (regex.test(email)) {
+        result.textContent = "✅ Alamat Gmail valid.";
+        result.className = "valid";
+      } else {
+        result.textContent = "❌ Alamat Gmail tidak valid.";
+        result.className = "invalid";
+      }
+    }
+  </script>
+</body>
+</html>
